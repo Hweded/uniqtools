@@ -11,6 +11,13 @@ into workflows, row-level analysis, reports, checks, and integrations.
 - [`packages/uniqrowdiff`](packages/uniqrowdiff/README.md): row-level
   changed-field analysis for CSV rows matched by key.
 
+## Examples
+
+- [`examples/uniqtools_starter`](examples/uniqtools_starter/README.md): minimal
+  adapter around the public `uniqdiff` API.
+- [`examples/uniqrowdiff_prototype`](examples/uniqrowdiff_prototype/README.md):
+  original row-level diff sketch kept as a product-layer example.
+
 ## Architecture
 
 ```text
