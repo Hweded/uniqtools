@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+pytest-cache-files-*/
+.venv/
+build/
+dist/
+
+# Local test/output artifacts.
+.tmp/
+.pytest-tmp/
+tmp/
+*.jsonl
+*.csv.tmp
+*.jsonl.tmp
+
+# Local packaging/install scratch space.
+.pip-tmp/
