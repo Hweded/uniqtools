@@ -1,0 +1,28 @@
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = [
+  ".tmp",
+  ".pytest-tmp",
+  ".pip-tmp",
+  "pytest-cache-files-*",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = [
+  # Keep Python 3.9 syntax while using postponed annotations.
+  "UP007",
+  "UP045",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q -p no:cacheprovider"
+testpaths = [
+  "packages/uniqrowdiff/tests",
+  "packages/uniqcheck/tests",
+]
+
+[tool.mypy]
+python_version = "3.9"
+strict = true

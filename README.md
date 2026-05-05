@@ -10,6 +10,8 @@ into workflows, row-level analysis, reports, checks, and integrations.
 
 - [`packages/uniqrowdiff`](packages/uniqrowdiff/README.md): row-level
   changed-field analysis for CSV rows matched by key.
+- [`packages/uniqcheck`](packages/uniqcheck/README.md): CI-friendly CSV checks
+  for required columns, duplicate keys, and added/removed rows.
 
 ## Examples
 
@@ -43,16 +45,18 @@ Use both source roots during local development:
 PowerShell:
 
 ```powershell
-$env:PYTHONPATH = "..\\uniq_remote_check\\src;packages\\uniqrowdiff\\src"
+$env:PYTHONPATH = "..\\uniq_remote_check\\src;packages\\uniqrowdiff\\src;packages\\uniqcheck\\src"
 python -m uniqrowdiff --help
-python -m pytest packages\\uniqrowdiff\\tests -q
+python -m uniqcheck --help
+python -m pytest
 ```
 
 Bash:
 
 ```bash
-PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src python -m uniqrowdiff --help
-PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src python -m pytest packages/uniqrowdiff/tests -q
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m uniqrowdiff --help
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m uniqcheck --help
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m pytest
 ```
 
 ## Boundary Rule

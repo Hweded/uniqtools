@@ -95,6 +95,10 @@ Responsibilities:
 
 It may call `uniqdiff` for duplicate detection and presence checks.
 
+The initial scaffold lives in `packages/uniqcheck`. It currently focuses on
+CSV checks that map cleanly to the engine boundary: required columns, duplicate
+keys, and added or removed rows by key.
+
 ### uniqrowdiff
 
 Compares changed fields for rows that share the same key.

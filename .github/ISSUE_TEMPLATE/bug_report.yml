@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible UniqTools bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - uniqrowdiff
+        - uniqcheck
+        - docs
+        - examples
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Include the command, input shape, and minimal sample if possible.
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.12"
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows, macOS, Linux"

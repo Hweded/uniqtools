@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest a UniqTools feature or package.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - uniqrowdiff
+        - uniqcheck
+        - uniqreport
+        - uniqprofile
+        - uniqschema
+        - uniqtools-cli
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What workflow should this improve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the desired command, API, or artifact format.
+    validations:
+      required: true
