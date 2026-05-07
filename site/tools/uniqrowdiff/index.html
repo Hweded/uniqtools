@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>uniqrowdiff | Row-level and field-level CSV diff by key</title>
+    <meta
+      name="description"
+      content="uniqrowdiff compares CSV rows by key and reports changed fields, added rows, removed rows, duplicate keys, and JSONL artifacts for CI and ETL workflows."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/tools/uniqrowdiff/" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../../getting-started/">Quick start</a>
+          <a href="../uniqprofile/">uniqprofile</a>
+          <a href="../uniqcheck/">uniqcheck</a>
+          <a href="https://github.com/Hweded/uniqtools/tree/main/packages/uniqrowdiff">Source</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">Tool</p>
+      <h1>uniqrowdiff</h1>
+      <p class="lead">
+        Row-level changed-field analysis for CSV files matched by key. The exact
+        field comparison comes from uniqdiff 1.1; uniqrowdiff adds workflow
+        policy, duplicate-key handling, output shaping, and CI exit codes.
+      </p>
+
+      <div class="code">
+        <pre><code>uniqtools rowdiff old.csv new.csv --key id --output changes.jsonl
+uniqtools rowdiff old.csv new.csv --key id --column status --column score
+uniqtools rowdiff old.csv new.csv --key id --sorted-input --max-rows 1000</code></pre>
+      </div>
+
+      <h2>Output</h2>
+      <p>JSON summary is printed to stdout. Changed rows can be written as JSONL.</p>
+      <div class="code">
+        <pre><code>{
+  "changed_rows": 1,
+  "changed_fields": 2,
+  "only_in_first": 3,
+  "only_in_second": 4,
+  "duplicates_first": 0,
+  "duplicates_second": 0
+}</code></pre>
+      </div>
+
+      <h2>Best for</h2>
+      <ul>
+        <li>finding changed fields in database exports;</li>
+        <li>reviewing ETL output changes before deployment;</li>
+        <li>producing machine-readable JSONL artifacts for reports;</li>
+        <li>checking whether key-matched rows changed in CI.</li>
+      </ul>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>uniqprofile | CSV, TSV, and JSONL file profiling CLI</title>
+    <meta
+      name="description"
+      content="uniqprofile profiles CSV, TSV, and JSONL files for ETL preflight: row counts, columns, empty values, duplicate keys, and invalid records."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/tools/uniqprofile/" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../../getting-started/">Quick start</a>
+          <a href="../uniqcheck/">uniqcheck</a>
+          <a href="../uniqrowdiff/">uniqrowdiff</a>
+          <a href="https://github.com/Hweded/uniqtools/tree/main/packages/uniqprofile">Source</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">Tool</p>
+      <h1>uniqprofile</h1>
+      <p class="lead">
+        Lightweight file profiling for data engineers who need to understand a
+        CSV, TSV, or JSONL file before comparing it or loading it into a pipeline.
+      </p>
+
+      <div class="code">
+        <pre><code>uniqtools profile file users.csv --key id
+uniqtools profile file events.jsonl --format jsonl --key event_id --sample-size 10000</code></pre>
+      </div>
+
+      <h2>Profile fields</h2>
+      <ul>
+        <li>file path, format, and size in bytes;</li>
+        <li>row or record count;</li>
+        <li>column or field names;</li>
+        <li>empty value counts per column;</li>
+        <li>duplicate key count and duplicate key sample;</li>
+        <li>invalid JSONL record count.</li>
+      </ul>
+
+      <h2>Best for</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>ETL preflight</h3>
+          <p>Check file shape before a data pipeline runs.</p>
+        </article>
+        <article class="card">
+          <h3>CI diagnostics</h3>
+          <p>Print compact JSON when a data check fails.</p>
+        </article>
+        <article class="card">
+          <h3>Dataset triage</h3>
+          <p>Quickly inspect exports without opening pandas or a notebook.</p>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

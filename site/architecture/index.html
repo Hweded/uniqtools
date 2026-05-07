@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniqTools architecture | Product tools on top of uniqdiff</title>
+    <meta
+      name="description"
+      content="UniqTools architecture keeps uniqdiff as the stable comparison engine and puts profiling, checks, row diff, reports, and workflows in separate product-layer packages."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/architecture/" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../getting-started/">Quick start</a>
+          <a href="../ai/">AI docs</a>
+          <a href="https://github.com/Hweded/uniqtools">GitHub</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">Architecture</p>
+      <h1>Engine boundary first.</h1>
+      <p class="lead">
+        UniqTools is intentionally layered. The uniqdiff package owns exact
+        comparison semantics. UniqTools packages own user workflows.
+      </p>
+
+      <div class="code">
+        <pre><code>files / streams / connectors
+        |
+        v
+uniqdiff stable comparison engine
+        |
+        v
+CompareResult / JSONL events / field diff / schema diff
+        |
+        v
+UniqTools packages
+        |
+        v
+profile / checks / row diff / reports / workflows</code></pre>
+      </div>
+
+      <h2>What belongs in uniqdiff</h2>
+      <ul>
+        <li>exact comparison semantics;</li>
+        <li>key extraction and normalization;</li>
+        <li>memory and disk backends;</li>
+        <li>field diff and schema diff primitives;</li>
+        <li>JSONL event streams and lazy readers.</li>
+      </ul>
+
+      <h2>What belongs in UniqTools</h2>
+      <ul>
+        <li>file profiling and workflow preflight;</li>
+        <li>CI policies and exit codes;</li>
+        <li>row-level diff workflows;</li>
+        <li>future HTML/PDF/Excel reports;</li>
+        <li>future workflow orchestration and connectors.</li>
+      </ul>
+    </main>
+  </body>
+</html>

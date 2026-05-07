@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>uniqcheck | Data quality checks for CSV and CI/CD</title>
+    <meta
+      name="description"
+      content="uniqcheck runs CI-friendly CSV checks for required columns, duplicate keys, added rows, removed rows, and schema drift."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/tools/uniqcheck/" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../../getting-started/">Quick start</a>
+          <a href="../uniqprofile/">uniqprofile</a>
+          <a href="../uniqrowdiff/">uniqrowdiff</a>
+          <a href="https://github.com/Hweded/uniqtools/tree/main/packages/uniqcheck">Source</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">Tool</p>
+      <h1>uniqcheck</h1>
+      <p class="lead">
+        CI-friendly data checks built on top of the uniqdiff engine. Use it to
+        fail builds when files contain duplicate keys, missing columns, row
+        presence changes, or schema drift.
+      </p>
+
+      <div class="code">
+        <pre><code>uniqtools check file users.csv --key id --required-column email --fail-on-duplicates
+uniqtools check compare old.csv new.csv --key id --fail-on-added --fail-on-removed
+uniqtools check schema old.csv new.csv --fail-on-schema-change</code></pre>
+      </div>
+
+      <h2>Checks</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>check file</code></td>
+            <td>Required columns and duplicate key detection in one CSV file.</td>
+          </tr>
+          <tr>
+            <td><code>check compare</code></td>
+            <td>Added and removed rows by key using uniqdiff comparison semantics.</td>
+          </tr>
+          <tr>
+            <td><code>check schema</code></td>
+            <td>Added columns, removed columns, type changes, and nullable changes.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Exit codes</h2>
+      <ul>
+        <li><code>0</code>: selected checks passed;</li>
+        <li><code>1</code>: selected checks failed;</li>
+        <li><code>2</code>: invalid input or usage error.</li>
+      </ul>
+    </main>
+  </body>
+</html>

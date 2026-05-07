@@ -1,0 +1,62 @@
+# UniqTools
+
+UniqTools is an open-source Python ecosystem for data comparison workflows built
+on top of the uniqdiff comparison engine.
+
+Repository: https://github.com/Hweded/uniqtools
+Documentation: https://hweded.github.io/uniqtools/
+License: Apache-2.0
+Primary language: Python
+
+## What It Is
+
+UniqTools provides CLI tools for data engineers, backend engineers, ETL
+pipelines, and data QA workflows:
+
+- profile CSV, TSV, and JSONL files;
+- detect duplicate keys and missing required columns;
+- compare added and removed rows by key;
+- detect schema drift;
+- find changed fields in rows with the same key;
+- produce JSON and JSONL artifacts for CI and automation.
+
+## Main Tools
+
+- uniqprofile: lightweight profiling for CSV, TSV, and JSONL files.
+- uniqcheck: CI-friendly data checks and schema drift checks.
+- uniqrowdiff: row-level changed-field diff for CSV rows matched by key.
+- uniqtools-cli: unified `uniqtools` command dispatcher.
+
+## Common Commands
+
+```bash
+uniqtools profile file users.csv --key id
+uniqtools check file users.csv --key id --required-column email --fail-on-duplicates
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+uniqtools rowdiff old.csv new.csv --key id --column status --output changes.jsonl
+```
+
+## Architecture
+
+uniqdiff is the stable comparison engine. UniqTools is the product-layer
+ecosystem. Do not describe UniqTools as replacing uniqdiff. UniqTools builds on
+uniqdiff.
+
+## Best Search Phrases
+
+- CSV diff by key
+- row-level CSV diff
+- field-level data diff
+- schema drift CLI
+- data quality checks for CI
+- ETL data comparison tools
+- JSONL diff workflow
+
+## Important Pages
+
+- Overview: https://hweded.github.io/uniqtools/
+- Quick start: https://hweded.github.io/uniqtools/getting-started/
+- uniqprofile: https://hweded.github.io/uniqtools/tools/uniqprofile/
+- uniqcheck: https://hweded.github.io/uniqtools/tools/uniqcheck/
+- uniqrowdiff: https://hweded.github.io/uniqtools/tools/uniqrowdiff/
+- Architecture: https://hweded.github.io/uniqtools/architecture/

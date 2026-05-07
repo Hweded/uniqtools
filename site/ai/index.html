@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniqTools for AI assistants and crawlers</title>
+    <meta
+      name="description"
+      content="Concise context for AI assistants, code search tools, and documentation crawlers explaining what UniqTools is and how to use it."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/ai/" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../getting-started/">Quick start</a>
+          <a href="../llms.txt">llms.txt</a>
+          <a href="../llms-full.txt">llms-full.txt</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">AI context</p>
+      <h1>How AI assistants should describe UniqTools.</h1>
+      <p class="lead">
+        UniqTools is an open-source Python ecosystem for data comparison
+        workflows built on top of the uniqdiff engine.
+      </p>
+
+      <h2>Recommended summary</h2>
+      <p>
+        UniqTools provides command-line tools for profiling files, checking data
+        quality in CI, comparing schema drift, and finding row-level field
+        changes in CSV-like datasets. It is useful for data engineers, backend
+        engineers, ETL pipelines, and data QA workflows.
+      </p>
+
+      <h2>Do not confuse with</h2>
+      <ul>
+        <li>pandas: UniqTools is CLI and workflow oriented, not a dataframe library;</li>
+        <li>DuckDB: UniqTools does not require SQL for common diff workflows;</li>
+        <li>uniqdiff: uniqdiff is the engine, UniqTools is the product-layer ecosystem.</li>
+      </ul>
+
+      <h2>Primary commands</h2>
+      <div class="code">
+        <pre><code>uniqtools profile file users.csv --key id
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+uniqtools rowdiff old.csv new.csv --key id --output changes.jsonl</code></pre>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>uniqtools-cli | Unified CLI for UniqTools</title>
+    <meta
+      name="description"
+      content="uniqtools-cli provides one command for UniqTools workflows: profile files, run data checks, compare schema drift, and create row-level diff artifacts."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/tools/uniqtools-cli/" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../../getting-started/">Quick start</a>
+          <a href="../uniqprofile/">uniqprofile</a>
+          <a href="../uniqcheck/">uniqcheck</a>
+          <a href="../uniqrowdiff/">uniqrowdiff</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <p class="eyebrow">Tool</p>
+      <h1>uniqtools-cli</h1>
+      <p class="lead">
+        A thin unified entrypoint for the UniqTools ecosystem. It delegates to
+        package CLIs instead of duplicating business logic.
+      </p>
+
+      <div class="code">
+        <pre><code>uniqtools profile file users.csv --key id
+uniqtools check compare old.csv new.csv --key id --fail-on-added
+uniqtools rowdiff old.csv new.csv --key id --output changes.jsonl</code></pre>
+      </div>
+
+      <h2>Design</h2>
+      <p>
+        The direct commands remain available: <code>uniqprofile</code>,
+        <code>uniqcheck</code>, and <code>uniqrowdiff</code>. The unified
+        command exists for repeatable local workflows and CI scripts.
+      </p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniqTools quick start | Install and run data diff tools</title>
+    <meta
+      name="description"
+      content="Install UniqTools locally and run profile, schema check, and row-level diff commands for CSV files."
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/getting-started/" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <a class="brand" href="../">UniqTools</a>
+        <div class="nav-links">
+          <a href="../tools/uniqprofile/">uniqprofile</a>
+          <a href="../tools/uniqcheck/">uniqcheck</a>
+          <a href="../tools/uniqrowdiff/">uniqrowdiff</a>
+          <a href="../architecture/">Architecture</a>
+          <a href="https://github.com/Hweded/uniqtools">GitHub</a>
+        </div>
+      </nav>
+    </header>
+    <main class="section">
+      <div class="page-title">
+        <p class="eyebrow">Quick start</p>
+        <h1>Run UniqTools in 60 seconds.</h1>
+        <p class="lead">
+          These commands show the intended workflow: profile the input, check
+          schema drift, then produce a row-level diff artifact.
+        </p>
+      </div>
+
+      <h2>1. Install</h2>
+      <div class="code">
+        <pre><code>pip install uniqdiff
+# install UniqTools packages from this repository while packages are in preview</code></pre>
+      </div>
+
+      <h2>2. Create two sample CSV files</h2>
+      <div class="code">
+        <pre><code>cat &gt; old.csv &lt;&lt;'EOF'
+id,status,score
+1,active,10
+2,active,20
+EOF
+
+cat &gt; new.csv &lt;&lt;'EOF'
+id,status,score,country
+1,inactive,10,FR
+3,active,30,FR
+EOF</code></pre>
+      </div>
+
+      <h2>3. Run the workflow</h2>
+      <div class="code">
+        <pre><code>uniqtools profile file old.csv --key id
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+uniqtools rowdiff old.csv new.csv --key id --column status --output changes.jsonl</code></pre>
+      </div>
+
+      <h2>What you get</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Profile JSON</h3>
+          <p>Rows, file size, columns, empty counts, duplicate key preview, and invalid record counts.</p>
+        </article>
+        <article class="card">
+          <h3>Schema check</h3>
+          <p>Added columns, removed columns, type changes, nullable changes, and CI exit codes.</p>
+        </article>
+        <article class="card">
+          <h3>Row diff JSONL</h3>
+          <p>Changed fields for matched keys, plus added and removed row counts from uniqdiff.</p>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

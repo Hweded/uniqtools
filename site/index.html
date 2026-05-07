@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniqTools | Open-source data diff and data quality tools</title>
+    <meta
+      name="description"
+      content="UniqTools is an open-source toolkit for CSV, TSV, JSONL, and dataset comparison workflows: profiling, schema checks, row-level diff, and CI-friendly data quality commands."
+    />
+    <meta
+      name="keywords"
+      content="csv diff, data diff, row level diff, schema diff, data quality cli, ETL testing, JSONL diff, Python data tools"
+    />
+    <link rel="canonical" href="https://hweded.github.io/uniqtools/" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <meta property="og:title" content="UniqTools" />
+    <meta
+      property="og:description"
+      content="Open-source data diff and data quality tools built on the uniqdiff comparison engine."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hweded.github.io/uniqtools/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "UniqTools",
+        "description": "Open-source data diff and data quality tools for CSV, TSV, JSONL, ETL, and CI workflows.",
+        "codeRepository": "https://github.com/Hweded/uniqtools",
+        "programmingLanguage": "Python",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "runtimePlatform": "Python 3.9+",
+        "applicationCategory": "DeveloperApplication"
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Main navigation">
+        <a class="brand" href="./">UniqTools</a>
+        <div class="nav-links">
+          <a href="getting-started/">Quick start</a>
+          <a href="tools/uniqprofile/">uniqprofile</a>
+          <a href="tools/uniqcheck/">uniqcheck</a>
+          <a href="tools/uniqrowdiff/">uniqrowdiff</a>
+          <a href="architecture/">Architecture</a>
+          <a href="ai/">AI docs</a>
+          <a href="https://github.com/Hweded/uniqtools">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Open-source data workflow tools for Python teams</p>
+          <h1>Data diff, profiling, and CI checks for CSV, TSV, and JSONL.</h1>
+          <p class="lead">
+            UniqTools helps data engineers and backend teams compare files, detect
+            schema drift, profile datasets, and fail CI when data changes break
+            expectations. It is built on the stable uniqdiff comparison engine.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="getting-started/">Start in 60 seconds</a>
+            <a class="button secondary" href="https://github.com/Hweded/uniqtools">Star on GitHub</a>
+          </div>
+        </div>
+        <div class="code" aria-label="Command line examples">
+          <pre><code>pip install uniqdiff
+
+uniqtools profile file users.csv --key id
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+uniqtools rowdiff old.csv new.csv --key id --column status</code></pre>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Why UniqTools</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Built for ETL reality</h3>
+            <p>
+              Compare exports, validate schemas, inspect duplicates, and generate
+              row-level change artifacts without writing one-off scripts every time.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Engine plus tools</h3>
+            <p>
+              uniqdiff owns exact comparison semantics. UniqTools adds product-level
+              workflows such as profiling, CI checks, row diff, and future reports.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Friendly to automation</h3>
+            <p>
+              Commands return JSON, support CI exit codes, and produce artifacts that
+              can be loaded by scripts, dashboards, and AI agents.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Tools</h2>
+        <div class="grid two">
+          <article class="card">
+            <h3><a href="tools/uniqprofile/">uniqprofile</a></h3>
+            <p>Profile CSV, TSV, and JSONL files before diff or validation.</p>
+            <pre><code>uniqtools profile file users.csv --key id</code></pre>
+          </article>
+          <article class="card">
+            <h3><a href="tools/uniqcheck/">uniqcheck</a></h3>
+            <p>Run CI-friendly checks for required columns, duplicates, presence, and schema drift.</p>
+            <pre><code>uniqtools check schema old.csv new.csv --fail-on-schema-change</code></pre>
+          </article>
+          <article class="card">
+            <h3><a href="tools/uniqrowdiff/">uniqrowdiff</a></h3>
+            <p>Find changed fields for rows that share the same key.</p>
+            <pre><code>uniqtools rowdiff old.csv new.csv --key id --output changes.jsonl</code></pre>
+          </article>
+          <article class="card">
+            <h3><a href="tools/uniqtools-cli/">uniqtools-cli</a></h3>
+            <p>Use one command entrypoint for profile, check, and rowdiff workflows.</p>
+            <pre><code>uniqtools --help</code></pre>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Use cases</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Problem</th>
+              <th>Command</th>
+              <th>Best tool</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Preview a file before an ETL job</td>
+              <td><code>uniqtools profile file export.csv --key id</code></td>
+              <td>uniqprofile</td>
+            </tr>
+            <tr>
+              <td>Fail CI when schema drift appears</td>
+              <td><code>uniqtools check schema old.csv new.csv --fail-on-schema-change</code></td>
+              <td>uniqcheck</td>
+            </tr>
+            <tr>
+              <td>Find field changes by primary key</td>
+              <td><code>uniqtools rowdiff old.csv new.csv --key id</code></td>
+              <td>uniqrowdiff</td>
+            </tr>
+            <tr>
+              <td>Detect added and removed rows</td>
+              <td><code>uniqtools check compare old.csv new.csv --key id --fail-on-added</code></td>
+              <td>uniqcheck plus uniqdiff</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <h2>Designed for search engines and AI agents</h2>
+        <p class="note">
+          This site exposes concise HTML docs, structured metadata, a sitemap,
+          robots rules, and dedicated <a href="llms.txt">llms.txt</a> context so
+          AI assistants can cite the right package and commands.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Apache-2.0 open-source project.</span>
+        <span><a href="https://github.com/Hweded/uniqtools">GitHub</a> · <a href="llms.txt">llms.txt</a> · <a href="sitemap.xml">sitemap</a></span>
+      </div>
+    </footer>
+  </body>
+</html>

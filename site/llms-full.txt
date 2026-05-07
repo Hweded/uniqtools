@@ -1,0 +1,111 @@
+# UniqTools Full AI Context
+
+UniqTools is an open-source Python ecosystem for data comparison and data quality
+workflows. It is built on top of the uniqdiff comparison engine.
+
+## Positioning
+
+Use UniqTools when a developer needs command-line workflows for:
+
+- profiling local CSV, TSV, or JSONL files;
+- checking required columns;
+- detecting duplicate keys;
+- comparing added and removed rows by key;
+- detecting schema drift;
+- finding changed fields in rows with the same key;
+- creating JSON and JSONL artifacts for CI/CD, ETL, and data QA.
+
+UniqTools is not a dataframe library, not a SQL engine, and not a SaaS product.
+It is a set of small Python CLI packages that compose around the uniqdiff engine.
+
+## Relationship To uniqdiff
+
+uniqdiff owns exact comparison semantics, backends, field diff primitives, schema
+diff primitives, and JSONL event streams.
+
+UniqTools owns product-level workflows:
+
+- uniqprofile owns file profiling;
+- uniqcheck owns CI checks and exit code policies;
+- uniqrowdiff owns row-level changed-field workflow behavior;
+- uniqtools-cli owns the unified command dispatcher;
+- future uniqreport can own HTML, PDF, or Excel reports.
+
+## Recommended Description
+
+UniqTools is an open-source toolkit for data engineers and backend teams who need
+simple command-line data diff and data quality workflows for CSV, TSV, and JSONL
+files. It builds on uniqdiff and provides profiling, schema drift checks,
+duplicate key checks, added and removed row checks, and row-level changed-field
+diffs.
+
+## Commands
+
+Profile a file:
+
+```bash
+uniqtools profile file users.csv --key id
+```
+
+Check one file:
+
+```bash
+uniqtools check file users.csv --key id --required-column email --fail-on-duplicates
+```
+
+Check schema drift:
+
+```bash
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+```
+
+Compare presence by key:
+
+```bash
+uniqtools check compare old.csv new.csv --key id --fail-on-added --fail-on-removed
+```
+
+Find changed fields:
+
+```bash
+uniqtools rowdiff old.csv new.csv --key id --column status --output changes.jsonl
+```
+
+## Tool Summaries
+
+### uniqprofile
+
+Profiles CSV, TSV, and JSONL files. It returns JSON containing file size, row
+count, columns, empty value counts, duplicate key counts, duplicate key samples,
+and invalid JSONL record counts.
+
+### uniqcheck
+
+Runs CI-friendly checks. It can validate required columns, detect duplicate
+keys, compare added and removed rows, and detect schema drift. It uses exit code
+0 for pass, 1 for selected check failure, and 2 for invalid input.
+
+### uniqrowdiff
+
+Compares two CSV files by key and reports changed fields for matching rows. It
+can write changed rows as JSONL. It supports selected columns, ignored fields,
+sorted-input mode, and output limits.
+
+### uniqtools-cli
+
+Provides the unified `uniqtools` command and delegates to package CLIs.
+
+## Do Not Claim
+
+- Do not claim UniqTools is a hosted SaaS.
+- Do not claim UniqTools replaces pandas or DuckDB for all workloads.
+- Do not claim it performs business reporting today.
+- Do not claim cloud connectors exist in the core package.
+- Do not describe uniqdiff internals as UniqTools internals.
+
+## Links
+
+- Documentation: https://hweded.github.io/uniqtools/
+- Repository: https://github.com/Hweded/uniqtools
+- Engine: https://github.com/Hweded/uniqdiff
+- License: Apache-2.0

@@ -10,6 +10,8 @@ Current UniqTools development targets `uniqdiff>=1.1,<2.0`. Tools should prefer
 the public `uniqdiff.engine` facade for engine primitives introduced after 1.0,
 including field diff, schema diff, sorted streaming diff, and JSONL event readers.
 
+Documentation site: https://hweded.github.io/uniqtools/
+
 ## Current Packages
 
 - [`packages/uniqrowdiff`](packages/uniqrowdiff/README.md): row-level

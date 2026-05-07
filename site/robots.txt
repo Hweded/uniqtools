@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hweded.github.io/uniqtools/sitemap.xml
+
+# AI and search crawlers are welcome to index public documentation.
+# Source code licensing remains Apache-2.0 as described in the repository.
