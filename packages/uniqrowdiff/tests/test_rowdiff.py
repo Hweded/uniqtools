@@ -97,6 +97,8 @@ def test_diff_csv_by_key_reports_changed_fields_and_presence():
         assert result.summary.changed_rows == 1
         assert result.summary.changed_fields == 2
         assert result.summary.skipped_duplicate_keys == 1
+        assert result.summary.field_result_mode == "memory"
+        assert result.field_result.summary_by_column["score"] == 3
         assert [change.key for change in result.changes] == ["4"]
         assert {change.field for change in result.changes[0].changes} == {"score", "status"}
         rows = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
@@ -149,6 +151,66 @@ def test_cli_returns_failure_code_when_requested(capsys):
         captured = capsys.readouterr()
         assert exit_code == 1
         assert '"changed_rows": 1' in captured.out
+    finally:
+        shutil.rmtree(workspace, ignore_errors=True)
+
+
+def test_diff_csv_by_key_uses_engine_column_filters_and_limits_output():
+    workspace = _workspace("columns")
+    try:
+        old_csv = workspace / "old.csv"
+        new_csv = workspace / "new.csv"
+        _write_csv(
+            old_csv,
+            [
+                {
+                    "id": "1",
+                    "name": "Ann",
+                    "status": "active",
+                    "score": "10",
+                    "updated_at": "2026-05-01",
+                },
+                {
+                    "id": "2",
+                    "name": "Bob",
+                    "status": "active",
+                    "score": "20",
+                    "updated_at": "2026-05-01",
+                },
+            ],
+        )
+        _write_csv(
+            new_csv,
+            [
+                {
+                    "id": "1",
+                    "name": "Anne",
+                    "status": "active",
+                    "score": "11",
+                    "updated_at": "2026-05-02",
+                },
+                {
+                    "id": "2",
+                    "name": "Bobby",
+                    "status": "active",
+                    "score": "21",
+                    "updated_at": "2026-05-02",
+                },
+            ],
+        )
+
+        result = diff_csv_by_key(
+            old_csv,
+            new_csv,
+            key="id",
+            columns=("score",),
+            max_rows=1,
+        )
+
+        assert result.summary.changed_rows == 1
+        assert result.summary.changed_fields == 1
+        assert result.changes[0].changes[0].field == "score"
+        assert result.field_result.summary_by_column == {"score": 2}
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
 

@@ -6,6 +6,10 @@ UniqTools is a product-layer ecosystem built on top of the stable
 `uniqdiff` owns exact comparison semantics. UniqTools packages turn engine facts
 into workflows, row-level analysis, reports, checks, and integrations.
 
+Current UniqTools development targets `uniqdiff>=1.1,<2.0`. Tools should prefer
+the public `uniqdiff.engine` facade for engine primitives introduced after 1.0,
+including field diff, schema diff, sorted streaming diff, and JSONL event readers.
+
 ## Current Packages
 
 - [`packages/uniqrowdiff`](packages/uniqrowdiff/README.md): row-level
@@ -30,6 +34,7 @@ uniqdiff stable comparison engine
         |
         v
 CompareResult / CompareStats / file result schema
+field diff / schema diff / JSONL event stream
         |
         v
 UniqTools packages
@@ -64,8 +69,11 @@ PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/
 UniqTools packages should depend only on public `uniqdiff` APIs:
 
 - root package exports;
+- `uniqdiff.engine` facade exports;
 - `CompareResult` and `CompareStats`;
 - file result schema and lazy readers;
+- field diff and schema diff result objects;
+- `uniqdiff.jsonl` event stream readers;
 - documented connector protocol.
 
 UniqTools packages should not import `uniqdiff.core`, `uniqdiff.storage`,

@@ -1,16 +1,20 @@
-"""CSV row-level changed-field analysis built on top of uniqdiff."""
+"""CSV row-level changed-field analysis built on top of uniqdiff 1.1."""
 
 from __future__ import annotations
 
-import csv
 import json
-from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
-from uniqdiff import CompareResult, compare_files
+from uniqdiff.engine import (
+    CompareResult,
+    FieldDiffResult,
+    compare_file_fields,
+    compare_file_fields_sorted,
+    compare_files,
+)
 
 
 @dataclass(frozen=True)
@@ -26,7 +30,7 @@ class FieldChange:
 class RowChange:
     """All changed fields for one matched key."""
 
-    key: str
+    key: Any
     changes: list[FieldChange]
 
 
@@ -42,6 +46,8 @@ class RowDiffSummary:
     changed_rows: int
     changed_fields: int
     skipped_duplicate_keys: int
+    field_result_mode: Optional[str]
+    field_truncated: bool
     backend: Optional[str]
     output: Optional[str]
     presence_output: Optional[str]
@@ -52,6 +58,7 @@ class RowDiffResult:
     """Product-layer result that wraps engine facts and row-level changes."""
 
     engine_result: CompareResult
+    field_result: FieldDiffResult
     summary: RowDiffSummary
     changes: list[RowChange]
 
@@ -62,8 +69,13 @@ def diff_csv_by_key(
     *,
     key: str,
     ignore_fields: Iterable[str] = (),
+    columns: Optional[Iterable[str]] = None,
     output: Optional[Path] = None,
     mode: str = "auto",
+    encoding: str = "utf-8-sig",
+    sorted_input: bool = False,
+    max_rows: Optional[int] = None,
+    max_bytes: Optional[Union[str, int]] = None,
 ) -> RowDiffResult:
     """Compare two CSV files and report field changes for shared unique keys."""
 
@@ -72,6 +84,7 @@ def diff_csv_by_key(
         str(first),
         str(second),
         format="csv",
+        encoding=encoding,
         key=key,
         mode=mode,
         result_mode="file" if presence_output is not None else "memory",
@@ -80,29 +93,28 @@ def diff_csv_by_key(
         include_duplicates=True,
     )
 
-    first_rows = _index_csv(first, key=key)
-    second_rows = _index_csv(second, key=key)
-    ignored = {key, *set(ignore_fields)}
+    field_diff = compare_file_fields_sorted if sorted_input else compare_file_fields
+    field_result = field_diff(
+        str(first),
+        str(second),
+        format="csv",
+        encoding=encoding,
+        key=key,
+        columns=None if columns is None else tuple(columns),
+        exclude_columns=(key, *tuple(ignore_fields)),
+    )
 
-    changes: list[RowChange] = []
-    skipped_duplicate_keys = 0
-    for row_key in sorted(set(first_rows) & set(second_rows)):
-        left_matches = first_rows[row_key]
-        right_matches = second_rows[row_key]
-        if len(left_matches) != 1 or len(right_matches) != 1:
-            skipped_duplicate_keys += 1
-            continue
-
-        changed_fields = _changed_fields(
-            left_matches[0],
-            right_matches[0],
-            ignore_fields=ignored,
-        )
-        if changed_fields:
-            changes.append(RowChange(key=row_key, changes=changed_fields))
+    duplicate_keys = _duplicate_keys(engine_result, key=key)
+    changes = _row_changes(
+        field_result,
+        skipped_keys=duplicate_keys,
+        max_rows=max_rows,
+    )
 
     if output is not None:
-        _write_changes_jsonl(output, changes)
+        output_truncated = _write_changes_jsonl(output, changes, max_bytes=max_bytes)
+    else:
+        output_truncated = False
 
     summary = RowDiffSummary(
         only_in_first=engine_result.stats.only_in_first_count,
@@ -112,42 +124,93 @@ def diff_csv_by_key(
         duplicates_second=engine_result.stats.duplicate_second_count,
         changed_rows=len(changes),
         changed_fields=sum(len(change.changes) for change in changes),
-        skipped_duplicate_keys=skipped_duplicate_keys,
+        skipped_duplicate_keys=len(duplicate_keys),
+        field_result_mode=field_result.metadata.get("result_mode"),
+        field_truncated=field_result.stats.truncated or output_truncated,
         backend=engine_result.metadata.get("backend"),
         output=None if output is None else str(output),
         presence_output=None if presence_output is None else str(presence_output),
     )
-    return RowDiffResult(engine_result=engine_result, summary=summary, changes=changes)
+    return RowDiffResult(
+        engine_result=engine_result,
+        field_result=field_result,
+        summary=summary,
+        changes=changes,
+    )
 
 
-def _index_csv(path: Path, *, key: str) -> dict[str, list[dict[str, str]]]:
-    rows_by_key: dict[str, list[dict[str, str]]] = defaultdict(list)
-    with path.open("r", encoding="utf-8", newline="") as file:
-        reader = csv.DictReader(file)
-        if reader.fieldnames is None or key not in reader.fieldnames:
-            raise ValueError(f"CSV file {path!s} does not contain key column {key!r}")
-        for row in reader:
-            rows_by_key[row[key]].append(dict(row))
-    return dict(rows_by_key)
+def _duplicate_keys(result: CompareResult, *, key: str) -> set[Any]:
+    duplicate_keys = set()
+    for section in ("duplicates_first", "duplicates_second"):
+        for row in result.iter_section(section):
+            if isinstance(row, dict) and key in row:
+                duplicate_keys.add(row[key])
+    return duplicate_keys
 
 
-def _changed_fields(
-    before: dict[str, str],
-    after: dict[str, str],
+def _row_changes(
+    field_result: FieldDiffResult,
     *,
-    ignore_fields: set[str],
-) -> list[FieldChange]:
-    changes: list[FieldChange] = []
-    for field in sorted((set(before) | set(after)) - ignore_fields):
-        before_value = before.get(field)
-        after_value = after.get(field)
-        if before_value != after_value:
-            changes.append(FieldChange(field=field, before=before_value, after=after_value))
+    skipped_keys: set[Any],
+    max_rows: Optional[int],
+) -> list[RowChange]:
+    changes: list[RowChange] = []
+    for row in field_result.rows:
+        row_key = row["key"]
+        if row_key in skipped_keys:
+            continue
+        if max_rows is not None and len(changes) >= max_rows:
+            break
+        changes.append(
+            RowChange(
+                key=row_key,
+                changes=[
+                    FieldChange(
+                        field=change["field"],
+                        before=change.get("left"),
+                        after=change.get("right"),
+                    )
+                    for change in row.get("changes", [])
+                ],
+            )
+        )
     return changes
 
 
-def _write_changes_jsonl(path: Path, changes: list[RowChange]) -> None:
+def _write_changes_jsonl(
+    path: Path,
+    changes: list[RowChange],
+    *,
+    max_bytes: Optional[Union[str, int]],
+) -> bool:
     path.parent.mkdir(parents=True, exist_ok=True)
+    byte_limit = _parse_byte_limit(max_bytes)
+    bytes_written = 0
+    truncated = False
     with path.open("w", encoding="utf-8", newline="") as file:
         for change in changes:
-            file.write(json.dumps({"section": "changed", "value": asdict(change)}) + "\n")
+            line = json.dumps(
+                {"section": "changed", "value": asdict(change)},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ) + "\n"
+            line_size = len(line.encode("utf-8"))
+            if byte_limit is not None and bytes_written + line_size > byte_limit:
+                truncated = True
+                break
+            file.write(line)
+            bytes_written += line_size
+    return truncated
+
+
+def _parse_byte_limit(value: Optional[Union[str, int]]) -> Optional[int]:
+    if value is None:
+        return None
+    if isinstance(value, int):
+        return value
+    text = value.strip().lower()
+    multipliers = {"kb": 1024, "mb": 1024**2, "gb": 1024**3}
+    for suffix, multiplier in multipliers.items():
+        if text.endswith(suffix):
+            return int(float(text[: -len(suffix)].strip()) * multiplier)
+    return int(text)

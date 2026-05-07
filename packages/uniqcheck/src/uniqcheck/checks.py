@@ -6,9 +6,9 @@ import csv
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
-from uniqdiff import compare_files
+from uniqdiff.engine import compare_file_schema, compare_files
 
 
 @dataclass(frozen=True)
@@ -38,6 +38,29 @@ class CompareCheckResult:
     duplicates_first: int
     duplicates_second: int
     backend: Optional[str]
+
+
+@dataclass(frozen=True)
+class SchemaCheckResult:
+    """Schema-aware comparison result backed by uniqdiff 1.1."""
+
+    first: str
+    second: str
+    added_columns: list[str]
+    removed_columns: list[str]
+    type_changes: list[dict[str, Any]]
+    nullable_changes: list[dict[str, Any]]
+    sampled: bool
+    warnings: list[str]
+
+    @property
+    def has_changes(self) -> bool:
+        return bool(
+            self.added_columns
+            or self.removed_columns
+            or self.type_changes
+            or self.nullable_changes
+        )
 
 
 def check_csv_file(
@@ -102,4 +125,36 @@ def compare_csv_by_key(
         duplicates_first=result.stats.duplicate_first_count,
         duplicates_second=result.stats.duplicate_second_count,
         backend=result.metadata.get("backend"),
+    )
+
+
+def compare_csv_schema(
+    first: Path,
+    second: Path,
+    *,
+    encoding: str = "utf-8-sig",
+    sample_size: Optional[int] = None,
+    empty_string_null: bool = True,
+    strict_numeric_types: bool = True,
+) -> SchemaCheckResult:
+    """Compare inferred CSV schemas through the public uniqdiff engine API."""
+
+    result = compare_file_schema(
+        str(first),
+        str(second),
+        format="csv",
+        encoding=encoding,
+        sample_size=sample_size,
+        empty_string_null=empty_string_null,
+        strict_numeric_types=strict_numeric_types,
+    )
+    return SchemaCheckResult(
+        first=str(first),
+        second=str(second),
+        added_columns=result.added_columns,
+        removed_columns=result.removed_columns,
+        type_changes=result.type_changes,
+        nullable_changes=result.nullable_changes,
+        sampled=result.left_schema.sampled or result.right_schema.sampled,
+        warnings=result.warnings,
     )

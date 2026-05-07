@@ -7,9 +7,10 @@ It answers a product-layer question that does not belong in `uniqdiff` itself:
 
 > For rows with the same key, which fields changed?
 
-`uniqdiff` remains responsible for exact presence comparison and duplicate
-counts. `uniqrowdiff` consumes those facts and adds row-level changed-field
-analysis.
+`uniqdiff 1.1` remains responsible for exact presence comparison, duplicate
+counts, and the engine-level field-diff primitive. `uniqrowdiff` consumes those
+facts and adds product policies such as duplicate-key skipping, CI exit codes,
+and tool-specific JSONL output.
 
 ## Current Scope
 
@@ -17,7 +18,12 @@ This scaffold currently supports:
 
 - CSV input;
 - key-based matching;
+- engine-backed field diff through `uniqdiff.engine`;
 - ignored fields;
+- selected-column comparison;
+- sorted-input mode for already key-sorted CSV files;
+- output limits for changed rows and bytes;
+- UTF-8 BOM tolerant CSV reading through the default `utf-8-sig` encoding;
 - JSONL output for changed rows;
 - summary JSON for CLI/CI;
 - optional non-zero exit code when changes, added rows, or removed rows are
@@ -49,6 +55,8 @@ PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src python -m uniqrowdi
 
 ```bash
 uniqrowdiff old.csv new.csv --key id --ignore updated_at --output changes.jsonl
+uniqrowdiff old.csv new.csv --key id --column status --column score
+uniqrowdiff old.csv new.csv --key id --sorted-input --max-rows 1000
 uniqrowdiff old.csv new.csv --key id --fail-on-changes
 uniqrowdiff old.csv new.csv --key id --fail-on-added --fail-on-removed
 ```
@@ -64,7 +72,7 @@ Exit codes:
 This package should depend only on public `uniqdiff` imports:
 
 ```python
-from uniqdiff import CompareResult, compare_files
+from uniqdiff.engine import CompareResult, compare_file_fields, compare_files
 ```
 
 It should not import `uniqdiff.core`, `uniqdiff.storage`, `uniqdiff.planner`, or

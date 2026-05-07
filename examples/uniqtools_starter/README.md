@@ -3,7 +3,7 @@
 This example shows the recommended first integration layer for UniqTools-style
 packages.
 
-The example intentionally uses only the public `uniqdiff` API:
+The example intentionally uses only the public `uniqdiff.engine` API:
 
 - `compare_files`;
 - `CompareResult`;
@@ -40,7 +40,7 @@ Future packages such as `uniqrowdiff`, `uniqcheck`, and `uniqreport` should trea
 `uniqdiff` as a stable engine dependency:
 
 ```toml
-dependencies = ["uniqdiff>=1.0,<2.0"]
+dependencies = ["uniqdiff>=1.1,<2.0"]
 ```
 
 Tool-specific behavior should live outside `uniqdiff`. For example:

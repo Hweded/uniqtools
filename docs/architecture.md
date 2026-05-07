@@ -15,6 +15,8 @@ quality checks, and integrations.
 - which records exist only in the second source;
 - which records are common by an exact token;
 - which records are duplicated by an exact token;
+- which fields changed for rows with the same exact key;
+- how inferred schemas differ by column, type, and nullability;
 - how the comparison was executed and which backend was used.
 
 UniqTools packages turn those engine facts into user-facing workflows:
@@ -43,6 +45,7 @@ uniqdiff stable comparison engine
         |
         v
 CompareResult / CompareStats / file result schema / lazy readers
+field diff / schema diff / JSONL event streams
         |
         v
 UniqTools product packages
@@ -70,13 +73,14 @@ It should not perform exact diff itself. When it needs comparison, it should cal
 
 ### uniqschema
 
-Infers and validates schemas for CSV, TSV, JSONL, and Parquet-like sources.
+Builds product workflows around the schema primitives from `uniqdiff 1.1` for
+CSV, TSV, JSONL, and Parquet-like sources.
 
 Responsibilities:
 
-- schema inference;
-- schema validation;
-- schema drift detection;
+- schema inference through the engine;
+- schema validation policies;
+- schema drift detection through the engine;
 - compatibility checks between old and new files.
 
 It should produce schema facts, not comparison engine internals.
@@ -105,13 +109,15 @@ Compares changed fields for rows that share the same key.
 
 Responsibilities:
 
-- match rows by key;
+- call the `uniqdiff 1.1` field-diff engine by key;
+- apply product policies such as duplicate-key skipping;
 - report field-level changes;
 - support ignore columns and normalization rules;
 - emit JSONL/CSV output suitable for reports and CI.
 
-This package is the natural home for row-level changed-fields logic. `uniqdiff`
-should continue to answer whether a key is present, common, or duplicated.
+This package is the natural home for row-level changed-field workflows.
+`uniqdiff` owns the exact field-diff primitive; `uniqrowdiff` owns user-facing
+policies, CLI behavior, output shaping, and CI/report integration.
 
 ### uniqreport
 
@@ -150,9 +156,11 @@ UniqTools packages should use only documented `uniqdiff` contracts:
 
 - root exports such as `compare`, `compare_files`, `compare_sources`,
   `duplicates`, and `duplicates_source`;
+- the `uniqdiff.engine` facade for 1.1 engine primitives;
 - `CompareResult` and `CompareStats`;
 - file result schema with `section` and `value`;
 - lazy readers such as `iter_result_rows` and `iter_result_values`;
+- `FieldDiffResult`, schema diff results, and `uniqdiff.jsonl` event readers;
 - connector protocol and registry helpers;
 - documented exception classes;
 - documented CLI behavior for shell-level integration.
@@ -208,7 +216,7 @@ uniqtools/
 `uniqdiff` can remain a separate repository and dependency:
 
 ```toml
-dependencies = ["uniqdiff>=1.0,<2.0"]
+dependencies = ["uniqdiff>=1.1,<2.0"]
 ```
 
 ## MVP Recommendation
@@ -220,9 +228,10 @@ Why:
 
 - users often need to know not only which keys were added or removed, but which
   fields changed for matching keys;
-- this is clearly outside exact presence comparison;
+- product-level row diff is clearly outside exact presence comparison;
 - it creates immediate value for CSV/JSONL workflows;
-- it can reuse `uniqdiff` for key presence and duplicate checks;
+- it can reuse `uniqdiff` for key presence, duplicate checks, field diff, and
+  schema-aware preflight checks;
 - it can later feed `uniqreport`.
 
 Initial commands could look like:
@@ -243,7 +252,7 @@ public APIs.
 UniqTools should pin to the stable `uniqdiff` major version:
 
 ```toml
-uniqdiff>=1.0,<2.0
+uniqdiff>=1.1,<2.0
 ```
 
 Any behavior needed by tools should be promoted to documented `uniqdiff` public

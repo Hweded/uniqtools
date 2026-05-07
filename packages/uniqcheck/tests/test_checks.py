@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from uniqcheck import check_csv_file, compare_csv_by_key
+from uniqcheck import check_csv_file, compare_csv_by_key, compare_csv_schema
 from uniqcheck.cli import main
 
 
@@ -130,6 +130,53 @@ def test_cli_compare_returns_failure_code_for_added_rows(capsys):
         captured = capsys.readouterr()
         assert exit_code == 1
         assert '"only_in_second": 1' in captured.out
+    finally:
+        shutil.rmtree(workspace, ignore_errors=True)
+
+
+def test_compare_csv_schema_reports_schema_drift():
+    workspace = _workspace("schema")
+    try:
+        old_csv = workspace / "old.csv"
+        new_csv = workspace / "new.csv"
+        old_csv.write_text("id,email,status\n1,ann@example.com,active\n", encoding="utf-8")
+        new_csv.write_text(
+            "id,email,status,country\n1,ann@example.com,,FR\n",
+            encoding="utf-8",
+        )
+
+        result = compare_csv_schema(old_csv, new_csv)
+
+        assert result.added_columns == ["country"]
+        assert result.removed_columns == []
+        assert result.nullable_changes == [
+            {"column": "status", "left_nullable": False, "right_nullable": True}
+        ]
+        assert result.has_changes
+    finally:
+        shutil.rmtree(workspace, ignore_errors=True)
+
+
+def test_cli_schema_returns_failure_code_for_schema_changes(capsys):
+    workspace = _workspace("cli-schema")
+    try:
+        old_csv = workspace / "old.csv"
+        new_csv = workspace / "new.csv"
+        old_csv.write_text("id,email\n1,ann@example.com\n", encoding="utf-8")
+        new_csv.write_text("id,email,country\n1,ann@example.com,FR\n", encoding="utf-8")
+
+        exit_code = main(
+            [
+                "schema",
+                str(old_csv),
+                str(new_csv),
+                "--fail-on-schema-change",
+            ]
+        )
+
+        captured = capsys.readouterr()
+        assert exit_code == 1
+        assert '"added_columns": [' in captured.out
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
 

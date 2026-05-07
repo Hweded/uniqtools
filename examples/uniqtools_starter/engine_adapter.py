@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
-from uniqdiff import CompareResult, compare_files
+from uniqdiff.engine import CompareResult, compare_files
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 # uniqrowdiff Prototype
 
-This is a small product-layer prototype for the future `uniqrowdiff` package.
+This is a legacy product-layer prototype for the `uniqrowdiff` package.
 
 It demonstrates how a UniqTools package can build row-level changed-field
 analysis on top of the stable `uniqdiff` engine without importing engine
@@ -16,9 +16,9 @@ The prototype compares two CSV files by a key column and reports:
 - duplicate-key counts from the engine;
 - changed fields for keys that exist exactly once in both files.
 
-The field-level change output is intentionally outside `uniqdiff`. The engine
-continues to own exact presence comparison, while this prototype owns
-product-layer row analysis.
+In `uniqdiff 1.1`, field-level comparison is now an engine primitive. The real
+`packages/uniqrowdiff` package uses that public engine API. This prototype is
+kept only as an older integration sketch.
 
 ## Run
 
@@ -53,7 +53,7 @@ uniqrowdiff old.csv new.csv --key id --ignore updated_at --format csv
 And depend on:
 
 ```toml
-dependencies = ["uniqdiff>=1.0,<2.0"]
+dependencies = ["uniqdiff>=1.1,<2.0"]
 ```
 
 The package should continue to use only public imports from `uniqdiff`.

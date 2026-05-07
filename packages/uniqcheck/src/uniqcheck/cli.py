@@ -10,7 +10,16 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Optional
 
-from uniqcheck import CompareCheckResult, FileCheckResult, check_csv_file, compare_csv_by_key
+from uniqdiff import UniqDiffError
+
+from uniqcheck import (
+    CompareCheckResult,
+    FileCheckResult,
+    SchemaCheckResult,
+    check_csv_file,
+    compare_csv_by_key,
+    compare_csv_schema,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -76,6 +85,38 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Exit with code 1 when duplicate keys are found in either file.",
     )
+
+    schema_parser = subparsers.add_parser(
+        "schema",
+        help="Compare inferred CSV schemas with the uniqdiff 1.1 schema engine.",
+    )
+    schema_parser.add_argument("first", help="First CSV file.")
+    schema_parser.add_argument("second", help="Second CSV file.")
+    schema_parser.add_argument(
+        "--encoding",
+        default="utf-8-sig",
+        help="CSV encoding. Defaults to utf-8-sig to tolerate UTF-8 BOM files.",
+    )
+    schema_parser.add_argument(
+        "--sample-size",
+        type=int,
+        help="Infer schema from at most this many rows from each file.",
+    )
+    schema_parser.add_argument(
+        "--empty-string-not-null",
+        action="store_true",
+        help="Treat empty strings as string values instead of nulls.",
+    )
+    schema_parser.add_argument(
+        "--loose-numeric-types",
+        action="store_true",
+        help="Treat int and float values as a shared number type.",
+    )
+    schema_parser.add_argument(
+        "--fail-on-schema-change",
+        action="store_true",
+        help="Exit with code 1 when schema differences are found.",
+    )
     return parser
 
 
@@ -93,16 +134,28 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             print(json.dumps(asdict(file_result), indent=2, sort_keys=True))
             return 1 if _file_should_fail(args, file_result) else 0
 
-        compare_result = compare_csv_by_key(
+        if args.command == "compare":
+            compare_result = compare_csv_by_key(
+                Path(args.first),
+                Path(args.second),
+                key=args.key,
+                mode=args.mode,
+                encoding=args.encoding,
+            )
+            print(json.dumps(asdict(compare_result), indent=2, sort_keys=True))
+            return 1 if _compare_should_fail(args, compare_result) else 0
+
+        schema_result = compare_csv_schema(
             Path(args.first),
             Path(args.second),
-            key=args.key,
-            mode=args.mode,
             encoding=args.encoding,
+            sample_size=args.sample_size,
+            empty_string_null=not args.empty_string_not_null,
+            strict_numeric_types=not args.loose_numeric_types,
         )
-        print(json.dumps(asdict(compare_result), indent=2, sort_keys=True))
-        return 1 if _compare_should_fail(args, compare_result) else 0
-    except (OSError, ValueError) as exc:
+        print(json.dumps(asdict(schema_result), indent=2, sort_keys=True))
+        return 1 if _schema_should_fail(args, schema_result) else 0
+    except (OSError, ValueError, UniqDiffError) as exc:
         print(f"uniqcheck: {exc}", file=sys.stderr)
         return 2
 
@@ -121,6 +174,10 @@ def _compare_should_fail(args: argparse.Namespace, result: CompareCheckResult) -
         or (args.fail_on_removed and result.only_in_first)
         or (args.fail_on_duplicates and duplicates)
     )
+
+
+def _schema_should_fail(args: argparse.Namespace, result: SchemaCheckResult) -> bool:
+    return bool(args.fail_on_schema_change and result.has_changes)
 
 
 if __name__ == "__main__":
