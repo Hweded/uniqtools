@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uniqprofile"
+version = "0.1.0"
+description = "Lightweight file profiling for UniqTools workflows."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+  { name = "UniqTools maintainers" }
+]
+dependencies = [
+  "uniqdiff>=1.1,<2.0",
+]
+
+[project.scripts]
+uniqprofile = "uniqprofile.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+uniqprofile = ["py.typed"]

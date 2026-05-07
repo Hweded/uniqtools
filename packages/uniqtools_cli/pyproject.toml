@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uniqtools-cli"
+version = "0.1.0"
+description = "Unified CLI entrypoint for UniqTools packages."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+  { name = "UniqTools maintainers" }
+]
+dependencies = [
+  "uniqcheck>=0.1,<1.0",
+  "uniqprofile>=0.1,<1.0",
+  "uniqrowdiff>=0.1,<1.0",
+]
+
+[project.scripts]
+uniqtools = "uniqtools_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+uniqtools_cli = ["py.typed"]

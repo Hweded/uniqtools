@@ -71,6 +71,9 @@ Responsibilities:
 It should not perform exact diff itself. When it needs comparison, it should call
 `uniqdiff`.
 
+The initial package lives in `packages/uniqprofile`. It profiles local CSV, TSV,
+and JSONL files and emits JSON for CI or workflow preflight.
+
 ### uniqschema
 
 Builds product workflows around the schema primitives from `uniqdiff 1.1` for
@@ -149,6 +152,10 @@ Responsibilities:
 
 The `uniqdiff` CLI remains the direct engine CLI. `uniqtools-cli` becomes the
 workflow CLI.
+
+The first implementation is intentionally thin: `uniqtools profile ...`,
+`uniqtools check ...`, and `uniqtools rowdiff ...` delegate to package CLIs
+without duplicating product logic.
 
 ## Stable Contracts Consumed From uniqdiff
 

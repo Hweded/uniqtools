@@ -21,6 +21,8 @@ addopts = "-q -p no:cacheprovider"
 testpaths = [
   "packages/uniqrowdiff/tests",
   "packages/uniqcheck/tests",
+  "packages/uniqprofile/tests",
+  "packages/uniqtools_cli/tests",
 ]
 
 [tool.mypy]

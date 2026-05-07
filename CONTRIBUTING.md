@@ -16,9 +16,9 @@ engine boundary clear:
 PowerShell:
 
 ```powershell
-$env:PYTHONPATH = "..\uniq_remote_check\src;packages\uniqrowdiff\src;packages\uniqcheck\src"
+$env:PYTHONPATH = "..\uniq_remote_check\src;packages\uniqrowdiff\src;packages\uniqcheck\src;packages\uniqprofile\src;packages\uniqtools_cli\src"
 python -m ruff check .
-python -m mypy packages\uniqrowdiff\src packages\uniqcheck\src
+python -m mypy packages\uniqrowdiff\src packages\uniqcheck\src packages\uniqprofile\src packages\uniqtools_cli\src
 python -m pytest
 ```
 

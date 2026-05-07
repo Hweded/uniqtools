@@ -34,11 +34,11 @@ jobs:
         run: python -m ruff check .
 
       - name: Type check
-        run: python -m mypy packages/uniqrowdiff/src packages/uniqcheck/src
+        run: python -m mypy packages/uniqrowdiff/src packages/uniqcheck/src packages/uniqprofile/src packages/uniqtools_cli/src
         env:
-          PYTHONPATH: uniqdiff/src:packages/uniqrowdiff/src:packages/uniqcheck/src
+          PYTHONPATH: uniqdiff/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src
 
       - name: Test
         run: python -m pytest
         env:
-          PYTHONPATH: uniqdiff/src:packages/uniqrowdiff/src:packages/uniqcheck/src
+          PYTHONPATH: uniqdiff/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src

@@ -16,6 +16,18 @@ including field diff, schema diff, sorted streaming diff, and JSONL event reader
   changed-field analysis for CSV rows matched by key.
 - [`packages/uniqcheck`](packages/uniqcheck/README.md): CI-friendly CSV checks
   for required columns, duplicate keys, and added/removed rows.
+- [`packages/uniqprofile`](packages/uniqprofile/README.md): lightweight CSV, TSV,
+  and JSONL profiling for workflow preflight.
+- [`packages/uniqtools_cli`](packages/uniqtools_cli/README.md): unified `uniqtools`
+  command that delegates to package CLIs.
+
+## Unified CLI
+
+```bash
+uniqtools profile file users.csv --key id
+uniqtools check schema old.csv new.csv --fail-on-schema-change
+uniqtools rowdiff old.csv new.csv --key id --column status --output changes.jsonl
+```
 
 ## Examples
 
@@ -50,18 +62,21 @@ Use both source roots during local development:
 PowerShell:
 
 ```powershell
-$env:PYTHONPATH = "..\\uniq_remote_check\\src;packages\\uniqrowdiff\\src;packages\\uniqcheck\\src"
+$env:PYTHONPATH = "..\\uniq_remote_check\\src;packages\\uniqrowdiff\\src;packages\\uniqcheck\\src;packages\\uniqprofile\\src;packages\\uniqtools_cli\\src"
 python -m uniqrowdiff --help
 python -m uniqcheck --help
+python -m uniqprofile --help
+python -m uniqtools_cli --help
 python -m pytest
 ```
 
 Bash:
 
 ```bash
-PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m uniqrowdiff --help
-PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m uniqcheck --help
-PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src python -m pytest
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src python -m uniqrowdiff --help
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src python -m uniqcheck --help
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src python -m uniqprofile --help
+PYTHONPATH=../uniq_remote_check/src:packages/uniqrowdiff/src:packages/uniqcheck/src:packages/uniqprofile/src:packages/uniqtools_cli/src python -m pytest
 ```
 
 ## Boundary Rule
